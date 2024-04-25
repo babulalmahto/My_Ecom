@@ -1,15 +1,19 @@
 const express = require('express');
-const dotenv = require('dotenv');
-const cors=require('cors');
-const morgan=require('morgan');
-const connectDB = require('./model/db');
 const app = express();
+const dotenv = require('dotenv');
+const cors = require('cors');
+const morgan = require('morgan');
+const connectWithDb = require('./model/db');
+const authRouter = require('./router/auth.router');
 
 dotenv.config();
 app.use(express.json());
 app.use(morgan('dev'));
-connectDB();
+connectWithDb();
 app.use(cors());
+
+
+app.use("/api/ecom", authRouter)
 
 
 const PORT = process.env.PORT || 5000;

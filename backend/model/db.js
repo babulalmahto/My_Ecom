@@ -1,15 +1,14 @@
-const Mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
+const db_url = "mongodb://127.0.0.1:27017/my_ecom";
 
-
-const connectDB = async () => {
+const connectWithDb = async () => {
     try {
-        await Mongoose.connect('mongodb://localhost:27017/eCom');
-        console.log("DB Connected");
-    } catch (error) {
-        // console.log(error);
-        console.log("DB not connected")
-
+        await mongoose.connect(db_url)
+        console.log("connected with Db")
+    } catch (err) {
+        console.log("not able connect with db", err);
     }
 }
-module.exports = connectDB;
+
+module.exports = connectWithDb;
