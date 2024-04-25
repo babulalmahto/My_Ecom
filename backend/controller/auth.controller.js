@@ -76,4 +76,33 @@ let loginController = async (req, res) => {
     }
 }
 
-module.exports = { registerController, loginController };
+
+// This is reset password controller
+let resetPasswordController = async (req, res) => {
+    try {
+        let { email, password, answer } = req.body;
+        if (!email) {
+            return res.status(500).send({ message: "Email is reqiored *" })
+        }
+        if (!password) {
+            return res.status(500).send({ message: "Password is reqiored *" })
+        }
+        if (!answer) {
+            return res.status(500).send({ message: "Answer is reqiored *" })
+        }
+        let findData = await userModel.findOne({ email, answer });
+        // console.log(findData);
+        if (!findData) {
+            return res.status(500).send({ message: "Either email or answer are incorrect" });
+        }
+        let hashPassword = await encryptPassword(password);
+        // console.log(hashPassword);
+        await userModel.findByIdAndUpdate({ _id: findData._id }, { password: hashPassword }, { new: true })
+        res.status(200).send({ message: "Password Update Successful", success: true })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Something went wrong while reset-password", success: false });
+    }
+}
+
+module.exports = { registerController, loginController, resetPasswordController };
