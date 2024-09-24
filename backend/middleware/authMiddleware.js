@@ -1,11 +1,11 @@
-const jwt = require('jsonwebtoken');
-const userModel = require('../model/collections/user.collection');
+import jwt from 'jsonwebtoken';
+import usersModel from '../model/usersModel.js';
 
 
-let isRequire = async (req, res, next) => {
+export let isRequire = async (req, res, next) => {
     try {
         console.log("***********");
-        let decode = await jwt.verify(req.headers.authorization, process.env.SECRET_KEY)
+        let decode = await JsonWebTokenError.verify(req.headers.authorization, process.env.SECRET_KEY)
 
         req.user = decode
         console.log('hello I am decode', decode)
@@ -20,9 +20,9 @@ let isRequire = async (req, res, next) => {
     }
 }
 
-let isAdmin=async(req,res,next)=>{
+export let isAdmin=async(req,res,next)=>{
     try {
-      let userData=await userModel.findById({_id:req.user._id});
+      let userData=await usersModel.findById({_id:req.user._id});
       console.log('************')
       if(userData.role===true){
          next()  
@@ -32,5 +32,3 @@ let isAdmin=async(req,res,next)=>{
      
     }
  }
-
-module.exports = {isRequire, isAdmin}

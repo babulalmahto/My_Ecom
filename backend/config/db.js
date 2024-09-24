@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const db_url = "mongodb://127.0.0.1:27017/my_ecom";
 
@@ -11,4 +11,4 @@ const connectWithDb = async () => {
     }
 }
 
-module.exports = connectWithDb;
+export default connectWithDb

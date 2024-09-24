@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken')
-const { encryptPassword, matchPassword } = require("../helper/auth.helper.js");
-const userModel = require("../model/collections/user.collection");
+import jwt from 'jsonwebtoken';
+import { encryptPassword, matchPassword } from '../helper/authHelper.js';
+import usersModel from '../model/usersModel.js';
 
-let registerController = async (req, res) => {
+export let registerController = async (req, res) => {
     let { name, email, phone, password, address, answer } = req.body;
     try {
         if (!name) {
@@ -23,12 +23,12 @@ let registerController = async (req, res) => {
         if (!answer) {
             return res.status(500).send({ message: "Answer number is required *" })
         }
-        let findUser = await userModel.findOne({ email: email });
+        let findUser = await usersModel.findOne({ email: email });
         if (findUser) {
             return res.status(500).send({ message: "User is already register" })
         }
         let hashedPassword = await encryptPassword(password);
-        let users = new userModel({ name, email, phone, password: hashedPassword, address, answer }).save()
+        let users = new usersModel({ name, email, phone, password: hashedPassword, address, answer }).save()
         res.status(200).send({ message: "User registered successfully", users, success: true })
     } catch (error) {
         console.log(error)
@@ -37,7 +37,7 @@ let registerController = async (req, res) => {
     }
 }
 
-let loginController = async (req, res) => {
+export let loginController = async (req, res) => {
     try {
         let { email, password } = req.body;
         if (!email) {
@@ -46,7 +46,7 @@ let loginController = async (req, res) => {
         if (!password) {
             return res.status(500).send({ message: "Password is requred *" })
         }
-        let existingUser = await userModel.findOne({ email: email });
+        let existingUser = await usersModel.findOne({ email: email });
         if (!existingUser) {
             return res.status(200).send({ message: "Either email or password is Invalid" });
         }
@@ -78,7 +78,7 @@ let loginController = async (req, res) => {
 
 
 // This is reset password controller
-let resetPasswordController = async (req, res) => {
+export let resetPasswordHandler = async (req, res) => {
     try {
         let { email, password, answer } = req.body;
         if (!email) {
@@ -90,14 +90,14 @@ let resetPasswordController = async (req, res) => {
         if (!answer) {
             return res.status(500).send({ message: "Answer is reqiored *" })
         }
-        let findData = await userModel.findOne({ email, answer });
+        let findData = await usersModel.findOne({ email, answer });
         // console.log(findData);
         if (!findData) {
             return res.status(500).send({ message: "Either email or answer are incorrect" });
         }
         let hashPassword = await encryptPassword(password);
         // console.log(hashPassword);
-        await userModel.findByIdAndUpdate({ _id: findData._id }, { password: hashPassword }, { new: true })
+        await usersModel.findByIdAndUpdate({ _id: findData._id }, { password: hashPassword }, { new: true })
         res.status(200).send({ message: "Password Update Successful", success: true })
     } catch (error) {
         console.log(error);
@@ -105,4 +105,26 @@ let resetPasswordController = async (req, res) => {
     }
 }
 
-module.exports = { registerController, loginController, resetPasswordController };
+export let profileUpdateController = async (req, res) => {
+    try {
+        let { name, address, phone, password } = req.body
+        if (!name || !address || !phone) {
+            return res.staus(200).send({ message: "All fileld required *", success: false })
+        }
+        else {
+            let findData = await usersModel.find({ _id: req.user._id })
+            if (findData) {
+                let newPassword = password ? await encryptPassword(password) : findData.password;
+                let updateData = await usersModel.findByIdAndUpdate({ _id: req.user._id }, { ...req.body, password: newPassword }, { new: true })
+                res.status(200).send({ message: "Profile is Updated successful", success: true, user: updateData })
+            }
+            else {
+                return res.status(500).send({ success: false, message: "somthing wrong" })
+            }
+        }
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send({ message: "Somthing wrong while updating", err, success: false })
+    }
+}
