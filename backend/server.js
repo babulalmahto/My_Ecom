@@ -6,6 +6,7 @@ import connectWithDb from './config/db.js';
 import authRoute from './route/authRoute.js';
 import categoryRoute from './route/categoryRoute.js'
 import productRoute from './route/productRoute.js';
+import orderRoute from './route/orderRoute.js';
 
 const app = express();
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(cors());
 app.use("/api/ecom", authRoute);
 app.use("/api/ecom", categoryRoute)
 app.use("/api/ecom", productRoute)
+app.use("/api/ecom", orderRoute)
 
 
 const PORT = process.env.PORT || 5000;
