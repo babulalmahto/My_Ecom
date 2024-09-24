@@ -4,6 +4,7 @@ import cors from 'cors'
 import morgan from 'morgan';
 import connectWithDb from './config/db.js';
 import authRoute from './route/authRoute.js';
+import categoryRoute from './route/categoryRoute.js'
 
 const app = express();
 dotenv.config();
@@ -13,7 +14,8 @@ connectWithDb();
 app.use(cors());
 
 
-app.use("/api/ecom", authRoute)
+app.use("/api/ecom", authRoute);
+app.use("/api/ecom", categoryRoute)
 
 
 const PORT = process.env.PORT || 5000;
