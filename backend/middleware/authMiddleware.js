@@ -5,7 +5,7 @@ import usersModel from '../model/usersModel.js';
 export let isRequire = async (req, res, next) => {
     try {
         console.log("***********");
-        let decode = await JsonWebTokenError.verify(req.headers.authorization, process.env.SECRET_KEY)
+        let decode = await jwt.verify(req.headers.authorization, process.env.SECRET_KEY)
 
         req.user = decode
         console.log('hello I am decode', decode)

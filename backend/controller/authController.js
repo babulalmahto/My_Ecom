@@ -128,3 +128,41 @@ export let profileUpdateController = async (req, res) => {
         res.status(500).send({ message: "Somthing wrong while updating", err, success: false })
     }
 }
+
+// this is for the all find all users
+export let findAllUserContorlller = async (req, res) => {
+    try {
+        let users = await usersModel.find({})
+        return res.status(200).send({ message: "All user find", success: true, users, total: users.length })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ message: "Something wrong while getting all users", success: false, error })
+
+    }
+}
+// this is for update the user role
+export let userRoleContorller = async (req, res) => {
+    try {
+        let { role, id } = req.body
+        let findusers = await usersModel.findOne({ _id: id })
+        let updateRole = await usersModel.findByIdAndUpdate({ _id: { $ne: findusers._id } }, { role: role })
+        res.status(200).send({ message: "User role update successfully", success: true, users: updateRole, new: true })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ message: "Something wrong while update user role", success: false, error })
+    }
+}
+
+//update the Admin or user details
+export let updateContorller = async (req, res) => {
+    try {
+        let { name, address, phone, email } = req.body
+        let user = await usersModel.findOne({ email })
+        let updateUser = await usersModel.findByIdAndUpdate({ _id: user._id }, { name: name, address: address, phone: phone }, { new: true })
+        res.status(200).send({ message: "User Update Successfully", success: true, updateUser })
+    } catch (error) {
+        res.status(500).send({ message: "Something wrong while updating details", success: false, error })
+    }
+}
